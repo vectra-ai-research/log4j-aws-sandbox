@@ -1,14 +1,14 @@
 
-resource "aws_vpc" "Kat-JNDI-exploit-vpc" {
+resource "aws_vpc" "${var.deployment_prefix}JNDI-exploit-vpc" {
   cidr_block           = var.vpc_cidr
   enable_dns_hostnames = true
   tags = {
-    "Name" = "Kat-JNDI-Exploit-VPC"
+    "Name" = "${var.deployment_prefix}JNDI-Exploit-VPC"
   }
 }
 
-resource "aws_subnet" "Kat-Public-Subnet-1" {
-  vpc_id                  = aws_vpc.Kat-JNDI-exploit-vpc.id
+resource "aws_subnet" "${var.deployment_prefix}Public-Subnet-1" {
+  vpc_id                  = aws_vpc.${var.deployment_prefix}JNDI-exploit-vpc.id
   cidr_block              = var.public_subnet_1_cidr
   map_public_ip_on_launch = true
   availability_zone = "us-west-2a"
@@ -19,8 +19,8 @@ resource "aws_subnet" "Kat-Public-Subnet-1" {
 }
 
 
-resource "aws_route_table" "kat-Public-Route-Table" {
-  vpc_id = aws_vpc.Kat-JNDI-exploit-vpc.id
+resource "aws_route_table" "${var.deployment_prefix}Public-Route-Table" {
+  vpc_id = aws_vpc.${var.deployment_prefix}JNDI-exploit-vpc.id
 
   tags = {
     "Name" = "Public-Route-Table"
@@ -28,21 +28,21 @@ resource "aws_route_table" "kat-Public-Route-Table" {
 }
 
 resource "aws_route_table_association" "Public_Subnet_1_Association" {
-  route_table_id = aws_route_table.kat-Public-Route-Table.id
-  subnet_id      = aws_subnet.Kat-Public-Subnet-1.id
+  route_table_id = aws_route_table.${var.deployment_prefix}Public-Route-Table.id
+  subnet_id      = aws_subnet.${var.deployment_prefix}Public-Subnet-1.id
 }
 
 
-resource "aws_internet_gateway" "kat-vpc_igw" {
-  vpc_id = aws_vpc.Kat-JNDI-exploit-vpc.id
+resource "aws_internet_gateway" "lat-vpc_igw" {
+  vpc_id = aws_vpc.${var.deployment_prefix}JNDI-exploit-vpc.id
   tags = {
     "Name" = "VPC-IGW"
   }
 }
 
-resource "aws_route" "kat-vpc_igw_route" {
-  route_table_id         = aws_route_table.kat-Public-Route-Table.id
-  gateway_id             = aws_internet_gateway.kat-vpc_igw.id
+resource "aws_route" "${var.deployment_prefix}vpc_igw_route" {
+  route_table_id         = aws_route_table.${var.deployment_prefix}Public-Route-Table.id
+  gateway_id             = aws_internet_gateway.${var.deployment_prefix}vpc_igw.id
   destination_cidr_block = "0.0.0.0/0"
 }
 
@@ -57,14 +57,14 @@ data "aws_ami" "amazon-linux" {
 }
 
 resource "aws_key_pair" "ssh_key" {
-  key_name   = "kat-ec2-key"
-  public_key = "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQDrEvI51McoC0w6nu+kbGzm8bG6LNIkFiPH5X4ITtTuki6sOe5uren7/zibzK+oHUJkJY4gTJ8m3dfXZCfGQHekz9TuT+/n9f89JJVA1Hp39gEmPWLkdl9pJtGkPooHtk1cmpooZIFYyb264HW9XTeIqpI/jYlzVTC3VTLXLFOnxajDXcIZVAt8lZJMnxDKWc+asJRFlnn4nYRZXnGSg4sdcUeWjT+atR77bb3QGUjNzUqv+bReGQI7OA8s89qHHKieLX7hHD+LpjR+lMhghCS8lsz7zGilEiPpFMtVQcZqNtZAc5UYSuglqDCZJW8tEaZH265LGwWA6QE/wZL5of1JDNChloYDq+7idcIR2DLGSG/M1rsRK1DNmraOrFaHP2rQZ5mkNeO52kcFSvVmYksECJ2lPVVXizkOGIYtIH2ipX32nMpCGuQQT7FM10AlpW/RaVLoAQkHmgDHZOIFemnLyPb6EqpZkiVgEyFdt6Wm+tKMrudhCayCs9/oU+Fb+RE= kat-my-key"
+  key_name   = "${var.deployment_prefix}ec2-key"
+  public_key = var.public_key
 
 }
 
 resource "aws_security_group" "ec2-connect-sg" {
   name   = "EC2-SG"
-  vpc_id = aws_vpc.Kat-JNDI-exploit-vpc.id
+  vpc_id = aws_vpc.${var.deployment_prefix}JNDI-exploit-vpc.id
 
   ingress = [
   {
@@ -81,7 +81,7 @@ resource "aws_security_group" "ec2-connect-sg" {
       Name = "Allow EC2 Instance Connect"
       }
   },{
-    cidr_blocks      = ["75.72.14.230/32"]
+    cidr_blocks      = ["74.201.86.232/32"]
     description      = "Inbound from corp IP to vulnerable ap"
     from_port        = 22
     ipv6_cidr_blocks = []
@@ -110,13 +110,13 @@ resource "aws_security_group" "ec2-connect-sg" {
 
 }
 
-resource "aws_iam_instance_profile" "kat-JNDI-EC2-Profile" {
-  name = "kat-JNDI-EC2-Profile"
+resource "aws_iam_instance_profile" "${var.deployment_prefix}JNDI-EC2-Profile" {
+  name = "${var.deployment_prefix}JNDI-EC2-Profile"
   role = aws_iam_role.role.name
 }
 
 resource "aws_iam_role" "role" {
-  name = "kat-JNDI-EC2-Role"
+  name = "${var.deployment_prefix}JNDI-EC2-Role"
   path = "/"
 
   assume_role_policy = <<EOF
@@ -137,12 +137,12 @@ EOF
 }
 
 /*
-resource "aws_instance" "kat-jndiexploit-server" {
+resource "aws_instance" "${var.deployment_prefix}jndiexploit-server" {
   ami             = data.aws_ami.amazon-linux.id
   associate_public_ip_address = true
   instance_type   = var.ec2_instance_type
   key_name        = aws_key_pair.ssh_key.key_name
-  subnet_id       = aws_subnet.Kat-Public-Subnet-1.id
+  subnet_id       = aws_subnet.${var.deployment_prefix}Public-Subnet-1.id
   security_groups = [aws_security_group.ec2-connect-sg.id]
   user_data       = <<-EOF
               #!/bin/bash
@@ -153,42 +153,42 @@ resource "aws_instance" "kat-jndiexploit-server" {
               java -jar JNDIExploit-1.2-SNAPSHOT.jar -i $MY_IP -p 8888
               EOF
   tags = {
-    Name = "kat-jndiexploit-server"
+    Name = "${var.deployment_prefix}jndiexploit-server"
   }  
 
 }
 
 
 output "jndi-publicip" {
-  value = aws_instance.kat-jndiexploit-server.public_ip
+  value = aws_instance.${var.deployment_prefix}jndiexploit-server.public_ip
 }
 */
 
 
-resource "aws_instance" "kat-JNDI-vulnerable-app" {
+resource "aws_instance" "${var.deployment_prefix}JNDI-sandbox" {
   ami             = data.aws_ami.amazon-linux.id
-  iam_instance_profile = "kat-JNDI-EC2-Profile"
+  iam_instance_profile = "${var.deployment_prefix}JNDI-EC2-Profile"
   associate_public_ip_address = true
   key_name        = aws_key_pair.ssh_key.key_name
   instance_type   = var.ec2_instance_type
-  subnet_id       = aws_subnet.Kat-Public-Subnet-1.id
+  subnet_id       = aws_subnet.${var.deployment_prefix}Public-Subnet-1.id
   security_groups = [aws_security_group.ec2-connect-sg.id]
   user_data       = <<-EOF
               #!/bin/bash
               sudo yum install docker -y
-              sudo yum install java-1.8.0-openjdk -y
               sudo systemctl start docker.service
               sudo docker run --name vulnerable-app -p 8080:8080 ghcr.io/christophetd/log4shell-vulnerable-app
+              sudo yum install java-1.8.0-openjdk -y
               wget http://web.archive.org/web/20211210224333/https://github.com/feihong-cs/JNDIExploit/releases/download/v1.2/JNDIExploit.v1.2.zip
               unzip JNDIExploit.v1.2.zip
               MY_IP=$(hostname -I | awk '{print $1}')
               java -jar JNDIExploit-1.2-SNAPSHOT.jar -i $MY_IP -p 8888
               EOF
   tags = {
-    Name = "kat-JNDI-vulnerable-app"
+    Name = "${var.deployment_prefix}JNDI-sandbox"
   }
 }
 
-output "vulnerableApp-publicip" {
-  value = aws_instance.kat-JNDI-vulnerable-app.public_ip
+output "${var.deployment_prefix}JNDI-sandbox" {
+  value = aws_instance.${var.deployment_prefix}JNDI-sandbox.public_ip
 }
