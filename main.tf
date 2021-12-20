@@ -62,6 +62,10 @@ resource "aws_key_pair" "ssh_key" {
 
 }
 
+data "http" "myip" {
+  url = "http://ipv4.icanhazip.com"
+}
+
 resource "aws_security_group" "ec2-connect-sg" {
   name   = "EC2-SG"
   vpc_id = aws_vpc.kat-JNDI-exploit-vpc.id
@@ -81,8 +85,8 @@ resource "aws_security_group" "ec2-connect-sg" {
       Name = "Allow EC2 Instance Connect"
       }
   },{
-    cidr_blocks      = ["74.201.86.232/32"]
-    description      = "Inbound from corp IP to vulnerable ap"
+    cidr_blocks      = ["${chomp(data.http.myip.body)}/32"]
+    description      = "Allow inboud SSH from IP of host which deployed the infra"
     from_port        = 22
     ipv6_cidr_blocks = []
     prefix_list_ids  = []
@@ -98,7 +102,7 @@ resource "aws_security_group" "ec2-connect-sg" {
 
   egress = [{
     cidr_blocks      = ["0.0.0.0/0"]
-    description      = "SG-OUT"
+    description      = "Egress"
     from_port        = 0
     ipv6_cidr_blocks = []
     prefix_list_ids  = []
@@ -135,7 +139,6 @@ resource "aws_iam_role" "role" {
 }
 EOF
 }
-
 
 resource "aws_instance" "kat-JNDI-sandbox" {
   ami             = data.aws_ami.amazon-linux.id
