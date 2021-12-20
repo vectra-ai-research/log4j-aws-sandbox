@@ -7,12 +7,12 @@ Terraform deployment for a log4J testing sanbox complete with vulnerable applica
 	`aws sso login --profile [named-profile]`
 
 - Terraform
-	`terraform init`
-	`terraform plan`
-	`terraform apply --auto-approve`
+	- `terraform init`
+	- `terraform plan`
+	- `terraform apply --auto-approve`
 
 
-## Customize this deployment
+## Customize the deployment
 
 ### Credentials 
 - `provider.tf` file should detail the relative path to your aws config file along with the named profile you want to use.
@@ -42,7 +42,7 @@ The JNDI Exploit Server needs to be running and receiving callbacks from the vul
 More instructions for operating the [JNDI Exploit Server](http://web.archive.org/web/20211210111026/https://github.com/feihong-cs/JNDIExploit)
 
 ## Vulnarable Java Docker Container
-This container should be listening on `127.0.0.1:8080`.
+This container should be listening on `127.0.0.1:8080`
 
 More instructions for operating the [vulnerable docker container](https://github.com/christophetd/log4shell-vulnerable-app)
 
