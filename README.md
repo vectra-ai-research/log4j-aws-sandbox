@@ -17,13 +17,14 @@
 	``aws sso login --profile [named-prodile]``
 
 - Terraform
+	`terraform init`
 	`terraform plan`
 	`terraform apply --auto-approve`
 
 ## Connecting to your EC2 Instance
 
 - You can use EC2 Instance Connect (SSH from the Browser) to connect to your EC2 instance. Ingress rules allowing this are include in the deployment
-- If you configured a public key for the EC2 instance and allowed your IP in the security groups, you can directly SSH to the EC2 instance
+- You can directly SSH to the EC2 instance if you configured a public key.  The IP address is which was used to deploy the resources is automatically allowed to SSH into the EC2 instance.
 
 ## Getting the Java Exploit Server choochin'
 
