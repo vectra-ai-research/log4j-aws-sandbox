@@ -11,6 +11,9 @@
 - The names of all AWS resouces are prefixed with 'kat-' in the `main.tf` file.  If you don't want your resouces named after me, find and replace that value.
 
 
+Note, the deployment may take up to 3 minutes including the installation of the expoit server.
+
+
 ## Steps to Deployment
 
 - Ensure you have a valid aws session credential
