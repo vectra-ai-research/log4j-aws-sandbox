@@ -155,7 +155,6 @@ resource "aws_instance" "kat-JNDI-sandbox" {
       "wget http://web.archive.org/web/20211210224333/https://github.com/feihong-cs/JNDIExploit/releases/download/v1.2/JNDIExploit.v1.2.zip",
       "unzip JNDIExploit.v1.2.zip",
       "MY_IP=$(hostname -I | awk '{print $1}')",
-      "java -jar JNDIExploit-1.2-SNAPSHOT.jar -i $MY_IP -p 8888",
       "sudo docker exec vulnerable-app apk add curl"
     ]
   }
@@ -164,7 +163,7 @@ resource "aws_instance" "kat-JNDI-sandbox" {
     type        = "ssh"
     host        = self.public_ip
     user        = "ec2-user"
-    private_key = file("/Users/kattraxler/.ssh/kat-ec2-key")
+    agent       = true
   }  
 
   user_data       = <<-EOF
