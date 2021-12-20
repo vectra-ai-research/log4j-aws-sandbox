@@ -8,7 +8,7 @@
 - Input the public key you want to use to connect to the EC2 instance in the `variables.tf` file as the value of `public_key`.
 
 ### Naming Things 
-- Change the value of `deployment_prefix` variable to change the name of the resources deployed.  If you don't change this all your AWS resoures will be named in my honor.
+- The names of all AWS resouces are prefixed with 'kat-' in the `main.tf` file.  If you don't want your resouces named after me, find and replace that value.
 
 
 ## Steps to Deployment

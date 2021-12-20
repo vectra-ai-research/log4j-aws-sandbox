@@ -136,34 +136,6 @@ resource "aws_iam_role" "role" {
 EOF
 }
 
-/*
-resource "aws_instance" "kat-jndiexploit-server" {
-  ami             = data.aws_ami.amazon-linux.id
-  associate_public_ip_address = true
-  instance_type   = var.ec2_instance_type
-  key_name        = aws_key_pair.ssh_key.key_name
-  subnet_id       = aws_subnet.kat-Public-Subnet-1.id
-  security_groups = [aws_security_group.ec2-connect-sg.id]
-  user_data       = <<-EOF
-              #!/bin/bash
-              sudo yum install java-1.8.0-openjdk
-              wget http://web.archive.org/web/20211210224333/https://github.com/feihong-cs/JNDIExploit/releases/download/v1.2/JNDIExploit.v1.2.zip
-              unzip JNDIExploit.v1.2.zip
-              MY_IP=$(hostname -I)
-              java -jar JNDIExploit-1.2-SNAPSHOT.jar -i $MY_IP -p 8888
-              EOF
-  tags = {
-    Name = "kat-jndiexploit-server"
-  }  
-
-}
-
-
-output "jndi-publicip" {
-  value = aws_instance.kat-jndiexploit-server.public_ip
-}
-*/
-
 
 resource "aws_instance" "kat-JNDI-sandbox" {
   ami             = data.aws_ami.amazon-linux.id
